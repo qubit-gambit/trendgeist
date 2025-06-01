@@ -2,6 +2,8 @@
 
 A professional economic forecasting platform with real Federal Reserve data integration, AI coaching, and competitive predictions.
 
+🌐 **Live Demo**: [https://qubit-gambit.github.io/trendgeist/](https://qubit-gambit.github.io/trendgeist/)
+
 ## 🚀 Quick Start
 
 ### File Structure
