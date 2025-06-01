@@ -19,19 +19,7 @@ trendgeist/
    - Save `index.html`, `styles.css`, and `script.js` in the same folder
    - Ensure all files are in the same directory
 
-2. **Get FRED API Key** (Optional but recommended)
-   - Visit: https://fred.stlouisfed.org/docs/api/api_key.html
-   - Register for free account
-   - Request API key (instant approval)
-   - Copy your 32-character API key
-
-3. **Configure API Key**
-   - Open `script.js`
-   - Find line: `const FRED_API_KEY = '023c0cac1b685792419d62efef9a950e';`
-   - Replace with your actual API key
-   - Save the file
-
-4. **Launch Application**
+2. **Launch Application**
    - Open `index.html` in your web browser
    - Or serve via local server (recommended)
 
