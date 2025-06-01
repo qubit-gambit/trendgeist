@@ -6,9 +6,6 @@
 
 class FREDClient {
     constructor(apiKey, options = {}) {
-        if (!apiKey) {
-            throw new Error('FRED API key is required');
-        }
         this.apiKey = apiKey;
         this.baseURL = 'https://api.stlouisfed.org/fred';
         this.cache = new Map();
@@ -74,7 +71,7 @@ class TrendgeistDataManager {
     }
 
     async initialize(apiKey) {
-        if (!apiKey) {
+        if (!apiKey || apiKey === 'YOUR_ACTUAL_FRED_API_KEY_HERE') {
             this.showAPIKeyNeeded();
             return false;
         }
@@ -86,8 +83,6 @@ class TrendgeistDataManager {
             this.isInitialized = true;
             console.log('✅ FRED API connected successfully');
             this.showSuccessMessage();
-            // Save API key to localStorage
-            localStorage.setItem('FRED_API_KEY', apiKey);
             return true;
         } catch (error) {
             console.error('FRED API connection failed:', error);
@@ -246,21 +241,14 @@ class TrendgeistDataManager {
         errorDiv.innerHTML = `
             <h4 style="margin: 0 0 8px 0;">⚠️ FRED API Key Required</h4>
             <p style="margin: 0 0 12px 0;">To access real economic data, you need a free FRED API key.</p>
-            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <input type="text" 
-                       id="apiKeyInput" 
-                       placeholder="Enter your FRED API key" 
-                       style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <button onclick="submitAPIKey()" 
-                        style="background: var(--primary-orange); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                    Submit
-                </button>
-            </div>
             <a href="https://fred.stlouisfed.org/docs/api/api_key.html" 
                target="_blank" 
                style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
                → Get Your Free API Key Here
             </a>
+            <p style="margin: 12px 0 0 0; font-size: 0.8rem;">
+               Then add your key to the JavaScript code and reload the page.
+            </p>
         `;
         
         const coachSection = document.querySelector('.ai-coach');
@@ -285,13 +273,13 @@ class TrendgeistDataManager {
 // =============================================================================
 
 async function initializeFREDIntegration() {
+    // 🔑 Your FRED API Key - Replace with your actual key
+    const FRED_API_KEY = '023c0cac1b685792419d62efef9a950e';
+    
     const dataManager = new TrendgeistDataManager();
-    // Use default API key, fallback to localStorage if user has their own
-    const apiKey = localStorage.getItem('FRED_API_KEY') || '023c0cac1b685792419d62efef9a950e';
+    const initialized = await dataManager.initialize(FRED_API_KEY);
     
-    const success = await dataManager.initialize(apiKey);
-    
-    if (success) {
+    if (initialized) {
         // Update with real data every 30 minutes
         await dataManager.updatePredictionCards();
         setInterval(() => dataManager.updatePredictionCards(), 1800000);
@@ -572,25 +560,3 @@ window.closeSignupModal = closeSignupModal;
 window.openSigninModal = openSigninModal;
 window.closeSigninModal = closeSigninModal;
 window.signOut = signOut;
-
-// Add API key submission handler
-window.submitAPIKey = async function() {
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const apiKey = apiKeyInput.value.trim();
-    
-    if (!apiKey) {
-        showToast('Please enter a valid API key', 'error');
-        return;
-    }
-    
-    const dataManager = new TrendgeistDataManager();
-    const success = await dataManager.initialize(apiKey);
-    
-    if (success) {
-        const errorDiv = document.querySelector('.ai-coach > div');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
-        showToast('API key saved successfully!', 'success');
-    }
-};
