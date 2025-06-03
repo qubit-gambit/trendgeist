@@ -3403,3 +3403,326 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// =============================================================================
+// GLOBAL PAYMENT SYSTEM
+// =============================================================================
+
+class PaymentManager {
+    constructor() {
+        this.stripe = null;
+        this.apiBaseUrl = authManager.apiBaseUrl;
+        this.currency = 'USD';
+        this.plans = {};
+        this.tokenPackages = {};
+        
+        this.initializeStripe();
+    }
+
+    async initializeStripe() {
+        try {
+            // Load Stripe.js
+            if (!window.Stripe) {
+                const script = document.createElement('script');
+                script.src = 'https://js.stripe.com/v3/';
+                document.head.appendChild(script);
+                
+                await new Promise((resolve) => {
+                    script.onload = resolve;
+                });
+            }
+            
+            this.stripe = Stripe(process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_your_stripe_publishable_key');
+            await this.loadPlansAndCurrency();
+        } catch (error) {
+            console.error('Stripe initialization error:', error);
+        }
+    }
+
+    async loadPlansAndCurrency() {
+        try {
+            // Get user's currency based on location
+            const currencyResponse = await fetch(`${this.apiBaseUrl}/payments/currency`);
+            const currencyData = await currencyResponse.json();
+            this.currency = currencyData.currency;
+
+            // Load subscription plans
+            const plansResponse = await fetch(`${this.apiBaseUrl}/payments/plans?currency=${this.currency}`);
+            const plansData = await plansResponse.json();
+            this.plans = plansData.plans;
+
+            // Load token packages
+            const tokensResponse = await fetch(`${this.apiBaseUrl}/payments/tokens?currency=${this.currency}`);
+            const tokensData = await tokensResponse.json();
+            this.tokenPackages = tokensData.packages;
+
+        } catch (error) {
+            console.error('Failed to load payment data:', error);
+        }
+    }
+
+    // =============================================================================
+    // SUBSCRIPTION MANAGEMENT
+    // =============================================================================
+
+    async purchaseSubscription(planId) {
+        try {
+            if (!authManager.user) {
+                authManager.openAuthModal('login');
+                return;
+            }
+
+            authManager.showToast('Creating payment session...', 'info');
+
+            const response = await fetch(`${this.apiBaseUrl}/payments/create-subscription`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authManager.token}`
+                },
+                body: JSON.stringify({
+                    plan_id: planId,
+                    currency: this.currency
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error);
+            }
+
+            // Redirect to Stripe Checkout
+            const { error } = await this.stripe.redirectToCheckout({
+                sessionId: data.session_id
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+        } catch (error) {
+            console.error('Subscription purchase error:', error);
+            authManager.showToast(`Payment failed: ${error.message}`, 'error');
+        }
+    }
+
+    async purchaseTokens(packageId) {
+        try {
+            if (!authManager.user) {
+                authManager.openAuthModal('login');
+                return;
+            }
+
+            authManager.showToast('Creating token purchase session...', 'info');
+
+            const response = await fetch(`${this.apiBaseUrl}/payments/create-token-purchase`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authManager.token}`
+                },
+                body: JSON.stringify({
+                    package_id: packageId,
+                    currency: this.currency
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error);
+            }
+
+            // Redirect to Stripe Checkout
+            const { error } = await this.stripe.redirectToCheckout({
+                sessionId: data.session_id
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+        } catch (error) {
+            console.error('Token purchase error:', error);
+            authManager.showToast(`Payment failed: ${error.message}`, 'error');
+        }
+    }
+
+    // =============================================================================
+    // UI MANAGEMENT
+    // =============================================================================
+
+    showSubscriptionModal() {
+        if (!this.plans || Object.keys(this.plans).length === 0) {
+            authManager.showToast('Loading payment plans...', 'info');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'payment-modal';
+        modal.innerHTML = `
+            <div class="payment-modal-content">
+                <div class="payment-modal-header">
+                    <h2>🚀 Upgrade to Trendgeist Pro</h2>
+                    <button class="close-modal" onclick="this.closest('.payment-modal').remove()">×</button>
+                </div>
+                <div class="payment-plans">
+                    ${this.renderSubscriptionPlans()}
+                </div>
+                <div class="payment-footer">
+                    <p>💳 Secure payments powered by Stripe • 🌍 Global currency support</p>
+                    <p>💰 Settles to Pakistani accounts • 📊 Real-time analytics</p>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    showTokensModal() {
+        if (!this.tokenPackages || Object.keys(this.tokenPackages).length === 0) {
+            authManager.showToast('Loading token packages...', 'info');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'payment-modal';
+        modal.innerHTML = `
+            <div class="payment-modal-content">
+                <div class="payment-modal-header">
+                    <h2>🪙 Buy Prediction Tokens</h2>
+                    <button class="close-modal" onclick="this.closest('.payment-modal').remove()">×</button>
+                </div>
+                <div class="token-packages">
+                    ${this.renderTokenPackages()}
+                </div>
+                <div class="payment-footer">
+                    <p>🎯 Use tokens to place predictions • 🏆 Earn more by winning</p>
+                    <p>💎 Bonus tokens included with larger packages</p>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    renderSubscriptionPlans() {
+        return Object.keys(this.plans).map(planId => {
+            const plan = this.plans[planId];
+            const isPopular = planId === 'pro';
+            
+            return `
+                <div class="subscription-plan ${isPopular ? 'popular' : ''}">
+                    ${isPopular ? '<div class="plan-badge">Most Popular</div>' : ''}
+                    <div class="plan-header">
+                        <h3>${plan.name}</h3>
+                        <div class="plan-price">
+                            <span class="currency">${this.currency}</span>
+                            <span class="amount">${plan.price_local.toFixed(2)}</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="plan-features">
+                        ${plan.features.map(feature => `<div class="feature">✅ ${feature}</div>`).join('')}
+                    </div>
+                    <button class="plan-button" onclick="paymentManager.purchaseSubscription('${planId}')">
+                        Choose ${plan.name}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    renderTokenPackages() {
+        return Object.keys(this.tokenPackages).map(packageId => {
+            const pkg = this.tokenPackages[packageId];
+            const totalTokens = pkg.tokens + (pkg.bonus || 0);
+            const savings = pkg.bonus ? Math.round((pkg.bonus / pkg.tokens) * 100) : 0;
+            
+            return `
+                <div class="token-package ${pkg.badge ? 'featured' : ''}">
+                    ${pkg.badge ? `<div class="package-badge">${pkg.badge}</div>` : ''}
+                    <div class="package-header">
+                        <h3>${pkg.name}</h3>
+                        <div class="package-price">
+                            <span class="currency">${this.currency}</span>
+                            <span class="amount">${pkg.price_local.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="package-details">
+                        <div class="tokens-info">
+                            <div class="base-tokens">${pkg.tokens.toLocaleString()} tokens</div>
+                            ${pkg.bonus ? `<div class="bonus-tokens">+ ${pkg.bonus.toLocaleString()} bonus (${savings}% extra)</div>` : ''}
+                            <div class="total-tokens">= ${totalTokens.toLocaleString()} total</div>
+                        </div>
+                    </div>
+                    <button class="package-button" onclick="paymentManager.purchaseTokens('${packageId}')">
+                        Buy Now
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // =============================================================================
+    // PAYMENT STATUS HANDLING
+    // =============================================================================
+
+    handlePaymentSuccess() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (sessionId) {
+            this.checkPaymentStatus(sessionId);
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    async checkPaymentStatus(sessionId) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/payments/session/${sessionId}`, {
+                headers: {
+                    'Authorization': `Bearer ${authManager.token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.status === 'paid') {
+                authManager.showToast('🎉 Payment successful! Your account has been updated.', 'success');
+                // Refresh user data
+                await authManager.getUserProfile();
+                authManager.updateUserDisplay();
+            }
+        } catch (error) {
+            console.error('Payment status check error:', error);
+        }
+    }
+}
+
+// Initialize payment manager
+const paymentManager = new PaymentManager();
+
+// Global functions for payment buttons
+function showSubscriptionModal() {
+    paymentManager.showSubscriptionModal();
+}
+
+function showTokensModal() {
+    paymentManager.showTokensModal();
+}
+
+// Check for payment success on page load
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        paymentManager.handlePaymentSuccess();
+    }, 1000);
+});

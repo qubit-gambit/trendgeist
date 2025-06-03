@@ -1,0 +1,446 @@
+/* =============================================================================
+   GLOBAL PAYMENT SYSTEM STYLES
+   ============================================================================= */
+
+.payment-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.payment-modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.payment-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.payment-modal-header h2 {
+    color: #00ffff;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: #00ffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+/* =============================================================================
+   SUBSCRIPTION PLANS
+   ============================================================================= */
+
+.payment-plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.subscription-plan {
+    background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.subscription-plan::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #00ffff, #ff6b6b, #4ecdc4);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.subscription-plan:hover::before {
+    opacity: 1;
+}
+
+.subscription-plan.popular {
+    transform: scale(1.05);
+    border-color: #00ffff;
+}
+
+.subscription-plan.popular::before {
+    opacity: 1;
+}
+
+.plan-badge {
+    position: absolute;
+    top: -8px;
+    right: 1rem;
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.plan-header h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.plan-price .currency {
+    color: #00ffff;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.plan-price .amount {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.plan-price .period {
+    color: #888;
+    font-size: 1rem;
+}
+
+.plan-features {
+    margin-bottom: 2rem;
+}
+
+.feature {
+    color: #e0e0e0;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.plan-button {
+    width: 100%;
+    background: linear-gradient(135deg, #00ffff, #4ecdc4);
+    color: #1a1a2e;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plan-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+    background: linear-gradient(135deg, #4ecdc4, #00ffff);
+}
+
+/* =============================================================================
+   TOKEN PACKAGES
+   ============================================================================= */
+
+.token-packages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.token-package {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.token-package:hover {
+    transform: translateY(-5px);
+    border-color: #00ffff;
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+}
+
+.token-package.featured {
+    border-color: #ff6b6b;
+    background: linear-gradient(135deg, #2d1b2e 0%, #1a1a2e 100%);
+}
+
+.token-package.featured:hover {
+    border-color: #ff6b6b;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+}
+
+.package-badge {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.package-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.package-header h3 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.package-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.package-price .currency {
+    color: #00ffff;
+    font-size: 0.9rem;
+}
+
+.package-price .amount {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.package-details {
+    margin-bottom: 1.5rem;
+}
+
+.tokens-info {
+    text-align: center;
+}
+
+.base-tokens {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.bonus-tokens {
+    color: #4ecdc4;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.total-tokens {
+    color: #00ffff;
+    font-size: 1rem;
+    font-weight: bold;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.package-button {
+    width: 100%;
+    background: linear-gradient(135deg, #4ecdc4, #00ffff);
+    color: #1a1a2e;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.package-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.3);
+}
+
+/* =============================================================================
+   PAYMENT FOOTER
+   ============================================================================= */
+
+.payment-footer {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.payment-footer p {
+    color: #888;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+/* =============================================================================
+   PAYMENT BUTTONS IN MAIN UI
+   ============================================================================= */
+
+.payment-trigger-btn {
+    background: linear-gradient(135deg, #00ffff, #4ecdc4);
+    color: #1a1a2e;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.95rem;
+}
+
+.payment-trigger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.3);
+    color: #1a1a2e;
+}
+
+.payment-trigger-btn.tokens {
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+}
+
+.payment-trigger-btn.tokens:hover {
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .payment-modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+        max-height: 95vh;
+    }
+    
+    .payment-plans,
+    .token-packages {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .subscription-plan.popular {
+        transform: none;
+    }
+    
+    .plan-price .amount {
+        font-size: 2rem;
+    }
+    
+    .package-price .amount {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-modal-content {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .subscription-plan,
+    .token-package {
+        padding: 1rem;
+    }
+}
+
+/* =============================================================================
+   PAKISTANI SETTLEMENT INFO STYLES
+   ============================================================================= */
+
+.settlement-info {
+    background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.settlement-info h4 {
+    color: #00ffff;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.settlement-info ul {
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.settlement-info li {
+    margin: 0.5rem 0;
+}
+
+/* Animation for payment success */
+@keyframes paymentSuccess {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.payment-success-animation {
+    animation: paymentSuccess 0.6s ease-out;
+} 

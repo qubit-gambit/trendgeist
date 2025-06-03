@@ -19,6 +19,7 @@ const { cleanupExpiredTokens } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
 const predictionRoutes = require('./routes/predictions');
 const leaderboardRoutes = require('./routes/leaderboard');
+const paymentRoutes = require('./routes/payments');
 
 // Create Express app and HTTP server
 const app = express();
@@ -240,6 +241,7 @@ async function generatePredictionInsight(indicator, currentValue, trend, userCon
 app.use('/api/auth', authRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Legacy Gemini AI endpoints (for backward compatibility)
 app.post('/api/explain-indicator', async (req, res) => {
