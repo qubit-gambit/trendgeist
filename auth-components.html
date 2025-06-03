@@ -1,0 +1,144 @@
+<!-- Authentication Section for Header -->
+<div class="auth-section" id="authSection">
+    <!-- Logged Out State -->
+    <div class="auth-buttons" id="authButtons">
+        <button class="auth-btn login-btn" onclick="openAuthModal('login')">SIGN IN</button>
+        <button class="auth-btn signup-btn" onclick="openAuthModal('signup')">SIGN UP</button>
+    </div>
+    <!-- Logged In State -->
+    <div class="user-info" id="userInfo" style="display: none;">
+        <div class="user-avatar" id="userAvatar">👤</div>
+        <div class="user-details">
+            <div class="user-name" id="userName">Loading...</div>
+            <div class="user-points" id="userPoints">0 pts</div>
+        </div>
+        <div class="user-dropdown">
+            <button class="dropdown-btn" onclick="toggleUserDropdown()">⋮</button>
+            <div class="dropdown-menu" id="userDropdown">
+                <a href="#" onclick="showProfile()">👤 Profile</a>
+                <a href="#" onclick="showSettings()">⚙️ Settings</a>
+                <a href="#" onclick="logout()">🚪 Sign Out</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Authentication Modal -->
+<div id="authModal" class="auth-modal" style="display: none;">
+    <div class="modal-content auth-modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="authModalTitle">🔐 SIGN IN</div>
+            <button class="modal-close" onclick="closeAuthModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <!-- Sign In Form -->
+            <div id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <div class="form-actions">
+                    <button class="auth-submit-btn" onclick="handleLogin()">SIGN IN</button>
+                    <div class="auth-switch">
+                        Don't have an account? 
+                        <a href="#" onclick="switchAuthMode('signup')">Sign up here</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signupForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupFirstName">First Name</label>
+                    <input type="text" id="signupFirstName" placeholder="Your first name">
+                </div>
+                <div class="form-group">
+                    <label for="signupLastName">Last Name</label>
+                    <input type="text" id="signupLastName" placeholder="Your last name">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Choose a strong password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-actions">
+                    <button class="auth-submit-btn" onclick="handleSignup()">CREATE ACCOUNT</button>
+                    <div class="auth-switch">
+                        Already have an account? 
+                        <a href="#" onclick="switchAuthMode('login')">Sign in here</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="authLoading" class="auth-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Processing...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="auth-modal" style="display: none;">
+    <div class="modal-content auth-modal-content">
+        <div class="modal-header">
+            <div class="modal-title">👤 USER PROFILE</div>
+            <button class="modal-close" onclick="closeProfileModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="profile-section">
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">TOTAL POINTS</div>
+                        <div class="stat-value" id="profilePoints">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">CURRENT RANK</div>
+                        <div class="stat-value" id="profileRank">#0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">WIN STREAK</div>
+                        <div class="stat-value" id="profileStreak">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">ACCURACY</div>
+                        <div class="stat-value" id="profileAccuracy">0%</div>
+                    </div>
+                </div>
+                <div class="profile-form">
+                    <div class="form-group">
+                        <label for="profileFirstName">First Name</label>
+                        <input type="text" id="profileFirstName" placeholder="Your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileLastName">Last Name</label>
+                        <input type="text" id="profileLastName" placeholder="Your last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileBio">Bio</label>
+                        <textarea id="profileBio" placeholder="Tell us about yourself..." rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="auth-submit-btn" onclick="updateProfile()">UPDATE PROFILE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

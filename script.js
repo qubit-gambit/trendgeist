@@ -1312,6 +1312,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('Trendgeist Terminal initializing...');
         
+        // Initialize authentication system
+        await authManager.init();
+        
         // Initialize terminal interface
         initializeTerminal();
         
@@ -1320,6 +1323,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         // Initialize community forum
         initializeCommunityForum();
+        
+        // Initialize live predictions
+        initializeLivePredictions();
+        
+        // Initialize leaderboard interactions  
+        initializeLeaderboardInteractions();
         
         // Welcome message
         setTimeout(() => {
@@ -2903,5 +2912,492 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('predictions-tab')) {
         startPredictionUpdates();
         loadActiveBets();
+    }
+});
+
+// Authentication Management
+class AuthManager {
+    constructor() {
+        this.apiBaseUrl = 'http://localhost:3000/api';
+        this.token = localStorage.getItem('authToken');
+        this.user = null;
+        this.init();
+    }
+
+    async init() {
+        if (this.token) {
+            try {
+                await this.getUserProfile();
+                this.showUserInterface();
+            } catch (error) {
+                console.error('Failed to load user profile:', error);
+                this.logout();
+            }
+        }
+    }
+
+    // API helper methods
+    async apiCall(endpoint, options = {}) {
+        const url = `${this.apiBaseUrl}${endpoint}`;
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        if (this.token) {
+            headers.Authorization = `Bearer ${this.token}`;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Request failed');
+        }
+
+        return data;
+    }
+
+    // Authentication methods
+    async login(email, password) {
+        try {
+            const response = await this.apiCall('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password })
+            });
+
+            this.token = response.token;
+            this.user = response.user;
+            localStorage.setItem('authToken', this.token);
+            
+            this.showUserInterface();
+            this.showToast('Welcome back!', 'success');
+            return response;
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
+        }
+    }
+
+    async signup(userData) {
+        try {
+            const response = await this.apiCall('/auth/signup', {
+                method: 'POST',
+                body: JSON.stringify(userData)
+            });
+
+            this.token = response.token;
+            this.user = response.user;
+            localStorage.setItem('authToken', this.token);
+            
+            this.showUserInterface();
+            this.showToast('Account created successfully!', 'success');
+            return response;
+        } catch (error) {
+            console.error('Signup error:', error);
+            throw error;
+        }
+    }
+
+    async logout() {
+        try {
+            if (this.token) {
+                await this.apiCall('/auth/logout', { method: 'POST' });
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            this.token = null;
+            this.user = null;
+            localStorage.removeItem('authToken');
+            this.showLoginInterface();
+            this.showToast('Logged out successfully', 'info');
+        }
+    }
+
+    async getUserProfile() {
+        try {
+            const response = await this.apiCall('/auth/me');
+            this.user = response.user;
+            return response.user;
+        } catch (error) {
+            console.error('Get profile error:', error);
+            throw error;
+        }
+    }
+
+    async updateProfile(profileData) {
+        try {
+            const response = await this.apiCall('/auth/profile', {
+                method: 'PUT',
+                body: JSON.stringify(profileData)
+            });
+
+            this.user = response.user;
+            this.updateUserDisplay();
+            this.showToast('Profile updated successfully!', 'success');
+            return response;
+        } catch (error) {
+            console.error('Update profile error:', error);
+            throw error;
+        }
+    }
+
+    // UI Management
+    showUserInterface() {
+        const authButtons = document.getElementById('authButtons');
+        const userInfo = document.getElementById('userInfo');
+        
+        if (authButtons) authButtons.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'flex';
+        
+        this.updateUserDisplay();
+    }
+
+    showLoginInterface() {
+        const authButtons = document.getElementById('authButtons');
+        const userInfo = document.getElementById('userInfo');
+        
+        if (authButtons) authButtons.style.display = 'flex';
+        if (userInfo) userInfo.style.display = 'none';
+    }
+
+    updateUserDisplay() {
+        if (!this.user) return;
+
+        const userName = document.getElementById('userName');
+        const userPoints = document.getElementById('userPoints');
+        const userAvatar = document.getElementById('userAvatar');
+
+        if (userName) {
+            userName.textContent = this.user.username || this.user.first_name || 'User';
+        }
+        
+        if (userPoints) {
+            userPoints.textContent = `${this.user.total_points || 0} pts`;
+        }
+        
+        if (userAvatar) {
+            // You can customize avatar based on user tier or points
+            const points = this.user.total_points || 0;
+            if (points >= 10000) userAvatar.textContent = '👑';
+            else if (points >= 5000) userAvatar.textContent = '🏆';
+            else if (points >= 1000) userAvatar.textContent = '🎯';
+            else if (points >= 100) userAvatar.textContent = '⭐';
+            else userAvatar.textContent = '👤';
+        }
+    }
+
+    // Modal Management
+    openAuthModal(mode = 'login') {
+        const modal = document.getElementById('authModal');
+        const title = document.getElementById('authModalTitle');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        if (mode === 'login') {
+            title.textContent = '🔐 SIGN IN';
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        } else {
+            title.textContent = '🆕 CREATE ACCOUNT';
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        }
+
+        modal.style.display = 'flex';
+        this.clearAuthForms();
+    }
+
+    closeAuthModal() {
+        const modal = document.getElementById('authModal');
+        const loading = document.getElementById('authLoading');
+        
+        modal.style.display = 'none';
+        loading.style.display = 'none';
+        this.clearAuthForms();
+    }
+
+    switchAuthMode(mode) {
+        this.openAuthModal(mode);
+    }
+
+    clearAuthForms() {
+        // Clear login form
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        
+        // Clear signup form
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupUsername').value = '';
+        document.getElementById('signupFirstName').value = '';
+        document.getElementById('signupLastName').value = '';
+        document.getElementById('signupPassword').value = '';
+        document.getElementById('signupConfirmPassword').value = '';
+    }
+
+    showAuthLoading() {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loading = document.getElementById('authLoading');
+        
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'none';
+        loading.style.display = 'flex';
+    }
+
+    hideAuthLoading() {
+        const loading = document.getElementById('authLoading');
+        loading.style.display = 'none';
+    }
+
+    // Profile Modal
+    showProfile() {
+        if (!this.user) return;
+
+        const modal = document.getElementById('profileModal');
+        
+        // Update profile stats
+        document.getElementById('profilePoints').textContent = this.user.total_points || 0;
+        document.getElementById('profileRank').textContent = `#${this.user.current_rank || 0}`;
+        document.getElementById('profileStreak').textContent = this.user.win_streak || 0;
+        document.getElementById('profileAccuracy').textContent = `${this.user.accuracy_percentage || 0}%`;
+        
+        // Update profile form
+        document.getElementById('profileFirstName').value = this.user.first_name || '';
+        document.getElementById('profileLastName').value = this.user.last_name || '';
+        document.getElementById('profileBio').value = this.user.bio || '';
+        
+        modal.style.display = 'flex';
+    }
+
+    closeProfileModal() {
+        const modal = document.getElementById('profileModal');
+        modal.style.display = 'none';
+    }
+
+    // Dropdown management
+    toggleUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // Toast notifications
+    showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'block';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Form validation
+    validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    validatePassword(password) {
+        return password.length >= 8;
+    }
+
+    validateUsername(username) {
+        const re = /^[a-zA-Z0-9_]{3,30}$/;
+        return re.test(username);
+    }
+}
+
+// Initialize auth manager
+const authManager = new AuthManager();
+
+// Global functions for HTML onclick handlers
+function openAuthModal(mode) {
+    authManager.openAuthModal(mode);
+}
+
+function closeAuthModal() {
+    authManager.closeAuthModal();
+}
+
+function switchAuthMode(mode) {
+    authManager.switchAuthMode(mode);
+}
+
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+        authManager.showToast('Please fill in all fields', 'error');
+        return;
+    }
+
+    if (!authManager.validateEmail(email)) {
+        authManager.showToast('Please enter a valid email address', 'error');
+        return;
+    }
+
+    try {
+        authManager.showAuthLoading();
+        await authManager.login(email, password);
+        authManager.closeAuthModal();
+    } catch (error) {
+        authManager.hideAuthLoading();
+        authManager.showToast(error.message || 'Login failed', 'error');
+        
+        // Show login form again
+        const loginForm = document.getElementById('loginForm');
+        loginForm.style.display = 'block';
+    }
+}
+
+async function handleSignup() {
+    const email = document.getElementById('signupEmail').value.trim();
+    const username = document.getElementById('signupUsername').value.trim();
+    const firstName = document.getElementById('signupFirstName').value.trim();
+    const lastName = document.getElementById('signupLastName').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+    // Validation
+    if (!email || !username || !password || !confirmPassword) {
+        authManager.showToast('Please fill in all required fields', 'error');
+        return;
+    }
+
+    if (!authManager.validateEmail(email)) {
+        authManager.showToast('Please enter a valid email address', 'error');
+        return;
+    }
+
+    if (!authManager.validateUsername(username)) {
+        authManager.showToast('Username must be 3-30 characters (letters, numbers, underscore only)', 'error');
+        return;
+    }
+
+    if (!authManager.validatePassword(password)) {
+        authManager.showToast('Password must be at least 8 characters', 'error');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        authManager.showToast('Passwords do not match', 'error');
+        return;
+    }
+
+    try {
+        authManager.showAuthLoading();
+        await authManager.signup({
+            email,
+            username,
+            first_name: firstName,
+            last_name: lastName,
+            password
+        });
+        authManager.closeAuthModal();
+    } catch (error) {
+        authManager.hideAuthLoading();
+        authManager.showToast(error.message || 'Signup failed', 'error');
+        
+        // Show signup form again
+        const signupForm = document.getElementById('signupForm');
+        signupForm.style.display = 'block';
+    }
+}
+
+function showProfile() {
+    authManager.showProfile();
+}
+
+function closeProfileModal() {
+    authManager.closeProfileModal();
+}
+
+async function updateProfile() {
+    const firstName = document.getElementById('profileFirstName').value.trim();
+    const lastName = document.getElementById('profileLastName').value.trim();
+    const bio = document.getElementById('profileBio').value.trim();
+
+    try {
+        await authManager.updateProfile({
+            first_name: firstName,
+            last_name: lastName,
+            bio
+        });
+        authManager.closeProfileModal();
+    } catch (error) {
+        authManager.showToast(error.message || 'Profile update failed', 'error');
+    }
+}
+
+function showSettings() {
+    authManager.showToast('Settings coming soon!', 'info');
+}
+
+function logout() {
+    authManager.logout();
+}
+
+function toggleUserDropdown() {
+    authManager.toggleUserDropdown();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('userDropdown');
+    const dropdownBtn = e.target.closest('.dropdown-btn');
+    
+    if (!dropdownBtn && dropdown) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const authModal = document.getElementById('authModal');
+        const profileModal = document.getElementById('profileModal');
+        
+        if (authModal && authModal.style.display === 'flex') {
+            closeAuthModal();
+        }
+        if (profileModal && profileModal.style.display === 'flex') {
+            closeProfileModal();
+        }
+    }
+});
+
+// Close modals when clicking outside
+document.addEventListener('click', (e) => {
+    const authModal = document.getElementById('authModal');
+    const profileModal = document.getElementById('profileModal');
+    
+    if (e.target === authModal) {
+        closeAuthModal();
+    }
+    if (e.target === profileModal) {
+        closeProfileModal();
+    }
+});
+
+// Form submission with Enter key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const activeElement = document.activeElement;
+        
+        if (activeElement && activeElement.closest('#loginForm')) {
+            e.preventDefault();
+            handleLogin();
+        } else if (activeElement && activeElement.closest('#signupForm')) {
+            e.preventDefault();
+            handleSignup();
+        }
     }
 });
