@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Performance Coach - Trendgeist</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <a href="index.html">📊 Trendgeist</a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">Predictions</a>
+                <a href="coach.html" class="nav-link active">AI Coach</a>
+                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="education.html" class="nav-link">Education</a>
+                <a href="community.html" class="nav-link">Community</a>
+            </nav>
+            <div class="header-actions">
+                <button class="sign-in-btn" onclick="openSigninModal()">Sign In</button>
+                <button class="sign-up-btn" onclick="openSignupModal()">Sign Up</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>🤖 AI Performance Coach</h1>
+                <p>Get personalized insights and recommendations to improve your forecasting accuracy</p>
+            </div>
+
+            <div class="coach-container">
+                <!-- Performance Overview -->
+                <section class="coach-section">
+                    <h2>Your Performance Overview</h2>
+                    <div class="performance-metrics">
+                        <div class="metric-card">
+                            <h3>Overall Accuracy</h3>
+                            <div class="metric-value">78%</div>
+                            <div class="metric-trend positive">↑ 5% this month</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Calibration Score</h3>
+                            <div class="metric-value">0.82</div>
+                            <div class="metric-trend positive">↑ 0.1 this week</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Prediction Streak</h3>
+                            <div class="metric-value">12 days</div>
+                            <div class="metric-trend">Current streak</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Insights -->
+                <section class="coach-section">
+                    <h2>AI-Generated Insights</h2>
+                    <div class="insights-container">
+                        <div class="insight-card">
+                            <div class="insight-header">
+                                <span class="insight-icon">🎯</span>
+                                <h3>Prediction Patterns</h3>
+                            </div>
+                            <p>Your predictions show a tendency to be more accurate in CPI forecasts (82%) compared to employment data (71%). Consider focusing on employment data analysis to improve overall performance.</p>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-header">
+                                <span class="insight-icon">⚖️</span>
+                                <h3>Confidence Calibration</h3>
+                            </div>
+                            <p>Your confidence levels are well-calibrated for high-stakes predictions but tend to be overconfident in stable market conditions. Try reducing confidence by 10-15% during low-volatility periods.</p>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-header">
+                                <span class="insight-icon">📈</span>
+                                <h3>Improvement Areas</h3>
+                            </div>
+                            <p>Based on your prediction history, you could improve by paying more attention to Federal Reserve communication patterns and their impact on market expectations.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Personalized Recommendations -->
+                <section class="coach-section">
+                    <h2>Personalized Recommendations</h2>
+                    <div class="recommendations-list">
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">📊</div>
+                            <div class="recommendation-content">
+                                <h3>Focus on Employment Data</h3>
+                                <p>Your employment predictions show room for improvement. Consider reviewing the last 5 employment reports and their market reactions.</p>
+                                <a href="education.html#employment" class="action-link">Learn More →</a>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">🎯</div>
+                            <div class="recommendation-content">
+                                <h3>Adjust Confidence Levels</h3>
+                                <p>Your confidence calibration could be improved by reducing confidence by 10-15% during stable market conditions.</p>
+                                <a href="education.html#calibration" class="action-link">Learn More →</a>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">📈</div>
+                            <div class="recommendation-content">
+                                <h3>Study Fed Communication</h3>
+                                <p>Improve your understanding of Federal Reserve communication patterns and their impact on market expectations.</p>
+                                <a href="education.html#fed" class="action-link">Learn More →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Trendgeist</h3>
+                    <p>Professional economic forecasting platform with real Federal Reserve data integration.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Predictions</a></li>
+                        <li><a href="coach.html">AI Coach</a></li>
+                        <li><a href="leaderboard.html">Leaderboard</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="education.html">Education Center</a></li>
+                        <li><a href="community.html">Community</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Trendgeist. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="signupModal" class="modal">
+        <!-- Signup modal content -->
+    </div>
+
+    <div id="signinModal" class="modal">
+        <!-- Signin modal content -->
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

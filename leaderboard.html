@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Trendgeist</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <a href="index.html">📊 Trendgeist</a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">Predictions</a>
+                <a href="coach.html" class="nav-link">AI Coach</a>
+                <a href="leaderboard.html" class="nav-link active">Leaderboard</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="education.html" class="nav-link">Education</a>
+                <a href="community.html" class="nav-link">Community</a>
+            </nav>
+            <div class="header-actions">
+                <button class="sign-in-btn" onclick="openSigninModal()">Sign In</button>
+                <button class="sign-up-btn" onclick="openSignupModal()">Sign Up</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>🏆 Global Leaderboard</h1>
+                <p>See how you stack up against the world's best economic forecasters</p>
+            </div>
+
+            <div class="leaderboard-container">
+                <!-- Top Performers -->
+                <section class="leaderboard-section">
+                    <h2>Top Performers</h2>
+                    <div class="top-performers">
+                        <div class="top-performer second">
+                            <div class="rank">2</div>
+                            <div class="user-info">
+                                <img src="https://i.pravatar.cc/150?img=2" alt="User avatar" class="avatar">
+                                <div class="user-details">
+                                    <h3>Sarah Chen</h3>
+                                    <p>Accuracy: 89%</p>
+                                </div>
+                            </div>
+                            <div class="score">2,847 pts</div>
+                        </div>
+                        <div class="top-performer first">
+                            <div class="rank">1</div>
+                            <div class="user-info">
+                                <img src="https://i.pravatar.cc/150?img=1" alt="User avatar" class="avatar">
+                                <div class="user-details">
+                                    <h3>Michael Rodriguez</h3>
+                                    <p>Accuracy: 92%</p>
+                                </div>
+                            </div>
+                            <div class="score">3,156 pts</div>
+                        </div>
+                        <div class="top-performer third">
+                            <div class="rank">3</div>
+                            <div class="user-info">
+                                <img src="https://i.pravatar.cc/150?img=3" alt="User avatar" class="avatar">
+                                <div class="user-details">
+                                    <h3>Emma Thompson</h3>
+                                    <p>Accuracy: 87%</p>
+                                </div>
+                            </div>
+                            <div class="score">2,645 pts</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Full Leaderboard -->
+                <section class="leaderboard-section">
+                    <h2>Global Rankings</h2>
+                    <div class="leaderboard-filters">
+                        <button class="filter-btn active">All Time</button>
+                        <button class="filter-btn">This Month</button>
+                        <button class="filter-btn">This Week</button>
+                    </div>
+                    <div class="leaderboard-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>User</th>
+                                    <th>Accuracy</th>
+                                    <th>Streak</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="current-user">
+                                    <td>42</td>
+                                    <td class="user-cell">
+                                        <img src="https://i.pravatar.cc/150?img=42" alt="Your avatar" class="avatar">
+                                        <span>You</span>
+                                    </td>
+                                    <td>78%</td>
+                                    <td>12 days</td>
+                                    <td>1,845</td>
+                                </tr>
+                                <!-- More rows will be dynamically added -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Category Rankings -->
+                <section class="leaderboard-section">
+                    <h2>Category Experts</h2>
+                    <div class="category-rankings">
+                        <div class="category-card">
+                            <h3>CPI Forecasting</h3>
+                            <div class="category-leader">
+                                <img src="https://i.pravatar.cc/150?img=4" alt="Category leader" class="avatar">
+                                <div class="leader-info">
+                                    <h4>David Kim</h4>
+                                    <p>95% accuracy</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="category-card">
+                            <h3>Employment Data</h3>
+                            <div class="category-leader">
+                                <img src="https://i.pravatar.cc/150?img=5" alt="Category leader" class="avatar">
+                                <div class="leader-info">
+                                    <h4>Lisa Patel</h4>
+                                    <p>93% accuracy</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="category-card">
+                            <h3>Fed Policy</h3>
+                            <div class="category-leader">
+                                <img src="https://i.pravatar.cc/150?img=6" alt="Category leader" class="avatar">
+                                <div class="leader-info">
+                                    <h4>James Wilson</h4>
+                                    <p>91% accuracy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Trendgeist</h3>
+                    <p>Professional economic forecasting platform with real Federal Reserve data integration.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Predictions</a></li>
+                        <li><a href="coach.html">AI Coach</a></li>
+                        <li><a href="leaderboard.html">Leaderboard</a></li>
+                        <li><a href="analytics.html">Analytics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="education.html">Education Center</a></li>
+                        <li><a href="community.html">Community</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Trendgeist. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="signupModal" class="modal">
+        <!-- Signup modal content -->
+    </div>
+
+    <div id="signinModal" class="modal">
+        <!-- Signin modal content -->
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
