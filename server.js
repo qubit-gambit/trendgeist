@@ -44,7 +44,11 @@ const logger = winston.createLogger({
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || ["http://localhost:3000", "http://localhost:8000"],
+  origin: process.env.CORS_ORIGIN || [
+    "http://localhost:3000", 
+    "http://localhost:8000",
+    "https://qubit-gambit.github.io"
+  ],
   credentials: true
 }));
 
@@ -413,17 +417,17 @@ async function cleanup() {
 const PORT = process.env.PORT || 3000;
 
 initializeServices().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, () => {
     console.log(`
     🎉 Trendgeist Server Started!
     
-    🌐 Server: http://0.0.0.0:${PORT}
+    🌐 Server: http://localhost:${PORT}
     🔌 WebSocket: Available
     💾 Database: PostgreSQL
     🚀 Cache: ${cacheManager.client ? 'Redis' : 'Memory'}
     🤖 AI: ${model ? 'Gemini 1.5 Flash' : 'Disabled'}
     
-    📊 Health Check: http://0.0.0.0:${PORT}/health
+    📊 Health Check: http://localhost:${PORT}/health
     📈 API Docs: Available in README.md
     `);
   });
