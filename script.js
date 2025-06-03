@@ -1040,12 +1040,23 @@ function switchTerminalTab(tabName, element) {
         }
         // Initialize leaderboard interactions
         initializeLeaderboardInteractions();
+    } else if (tabName === 'community') {
+        // Hide main layout and show community tab
+        mainLayout.style.display = 'none';
+        const communityTab = document.getElementById('community-tab');
+        if (communityTab) {
+            communityTab.style.display = 'block';
+            communityTab.classList.add('active');
+        }
+        // Initialize community forum
+        initializeCommunityForum();
     } else {
         // Show main layout and hide other tabs
         mainLayout.style.display = 'flex';
         const analysisTab = document.getElementById('analysis-tab');
         const yieldsTab = document.getElementById('yields-tab');
         const leaderboardTab = document.getElementById('leaderboard-tab');
+        const communityTab = document.getElementById('community-tab');
         if (analysisTab) {
             analysisTab.style.display = 'none';
             analysisTab.classList.remove('active');
@@ -1057,6 +1068,10 @@ function switchTerminalTab(tabName, element) {
         if (leaderboardTab) {
             leaderboardTab.style.display = 'none';
             leaderboardTab.classList.remove('active');
+        }
+        if (communityTab) {
+            communityTab.style.display = 'none';
+            communityTab.classList.remove('active');
         }
     }
     
@@ -1292,6 +1307,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         // Initialize sentiment analysis
         initializeSentimentAnalysis();
+        
+        // Initialize community forum
+        initializeCommunityForum();
         
         // Welcome message
         setTimeout(() => {
@@ -2013,3 +2031,483 @@ function addYieldCurveAnalysisButton() {
 // =============================================================================
 // Enhanced Terminal Interface Functions
 // =============================================================================
+
+// =============================================================================
+// Community Forum Functions
+// =============================================================================
+
+// Initialize community forum functionality
+function initializeCommunityForum() {
+    // Initialize category switching
+    initializeCategoryFilters();
+    
+    // Initialize thread filters
+    initializeThreadFilters();
+    
+    // Initialize new post functionality
+    initializeNewPostForm();
+    
+    // Initialize thread interactions
+    initializeThreadInteractions();
+    
+    // Initialize online users updates
+    initializeOnlineUsers();
+    
+    // Start real-time updates
+    setTimeout(() => {
+        updateForumStats();
+    }, 3000);
+}
+
+// Initialize category filter functionality
+function initializeCategoryFilters() {
+    const categoryItems = document.querySelectorAll('.category-item');
+    
+    categoryItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active class from all categories
+            categoryItems.forEach(cat => cat.classList.remove('active'));
+            
+            // Add active class to clicked category
+            this.classList.add('active');
+            
+            const category = this.dataset.category;
+            const categoryName = this.querySelector('.category-name').textContent;
+            
+            // Filter threads by category
+            filterThreadsByCategory(category);
+            
+            showToast(`📁 Viewing ${categoryName} discussions`, 'info');
+        });
+    });
+}
+
+// Initialize thread filter functionality
+function initializeThreadFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all filters
+            filterBtns.forEach(filter => filter.classList.remove('active'));
+            
+            // Add active class to clicked filter
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            // Apply filter
+            applyThreadFilter(filter);
+            
+            showToast(`🔍 Sorting by ${filter}`, 'info');
+        });
+    });
+}
+
+// Initialize new post form functionality
+function initializeNewPostForm() {
+    const newPostBtn = document.querySelector('.new-post-btn');
+    const newPostForm = document.getElementById('newPostForm');
+    const submitBtn = document.querySelector('.submit-post-btn');
+    const cancelBtn = document.querySelector('.cancel-post-btn');
+    
+    if (newPostBtn) {
+        newPostBtn.addEventListener('click', toggleNewPost);
+    }
+    
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitNewPost);
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', toggleNewPost);
+    }
+}
+
+// Initialize thread interaction functionality
+function initializeThreadInteractions() {
+    const threadItems = document.querySelectorAll('.thread-item');
+    
+    threadItems.forEach(thread => {
+        thread.addEventListener('click', function(e) {
+            // Don't trigger if clicking on stats
+            if (e.target.closest('.thread-stats')) return;
+            
+            const title = this.querySelector('.thread-title').textContent;
+            const author = this.querySelector('.author-name').textContent;
+            
+            // Simulate opening thread
+            showToast(`📖 Opening: ${title} by ${author}`, 'info');
+            
+            // Add visual feedback
+            this.style.background = 'rgba(255, 165, 0, 0.1)';
+            setTimeout(() => {
+                this.style.background = '';
+            }, 300);
+        });
+        
+        // Add hover effects
+        thread.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(4px)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        thread.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+    
+    // Initialize load more functionality
+    const loadMoreBtn = document.querySelector('.load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', loadMoreThreads);
+    }
+}
+
+// Initialize online users functionality
+function initializeOnlineUsers() {
+    const onlineUsers = document.querySelectorAll('.online-user');
+    
+    onlineUsers.forEach(user => {
+        user.addEventListener('click', function() {
+            const userName = this.querySelector('.user-name').textContent;
+            const userStatus = this.querySelector('.user-status').textContent;
+            
+            showToast(`👤 ${userName}: ${userStatus}`, 'info');
+        });
+    });
+}
+
+// Toggle new post form visibility
+function toggleNewPost() {
+    const form = document.getElementById('newPostForm');
+    const btn = document.querySelector('.new-post-btn');
+    
+    if (form.style.display === 'none' || !form.style.display) {
+        form.style.display = 'block';
+        btn.textContent = '❌ CANCEL';
+        
+        // Focus on title input
+        const titleInput = form.querySelector('.post-title-input');
+        if (titleInput) {
+            setTimeout(() => titleInput.focus(), 100);
+        }
+    } else {
+        form.style.display = 'none';
+        btn.textContent = '✍️ START NEW DISCUSSION';
+        
+        // Clear form
+        clearNewPostForm();
+    }
+}
+
+// Submit new post
+function submitNewPost() {
+    const titleInput = document.querySelector('.post-title-input');
+    const categorySelect = document.querySelector('.post-category-select');
+    const contentInput = document.querySelector('.post-content-input');
+    
+    const title = titleInput.value.trim();
+    const category = categorySelect.value;
+    const content = contentInput.value.trim();
+    
+    // Validate inputs
+    if (!title) {
+        showToast('❌ Please enter a discussion title', 'error');
+        titleInput.focus();
+        return;
+    }
+    
+    if (!content) {
+        showToast('❌ Please enter discussion content', 'error');
+        contentInput.focus();
+        return;
+    }
+    
+    // Simulate posting
+    const submitBtn = document.querySelector('.submit-post-btn');
+    submitBtn.textContent = 'POSTING...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+        // Create new thread element
+        createNewThread(title, category, content);
+        
+        // Reset form
+        clearNewPostForm();
+        toggleNewPost();
+        
+        // Reset button
+        submitBtn.textContent = 'POST DISCUSSION';
+        submitBtn.disabled = false;
+        
+        showToast('🎉 Discussion posted successfully!', 'success');
+    }, 1500);
+}
+
+// Clear new post form
+function clearNewPostForm() {
+    const titleInput = document.querySelector('.post-title-input');
+    const contentInput = document.querySelector('.post-content-input');
+    const categorySelect = document.querySelector('.post-category-select');
+    
+    if (titleInput) titleInput.value = '';
+    if (contentInput) contentInput.value = '';
+    if (categorySelect) categorySelect.selectedIndex = 0;
+}
+
+// Create new thread element
+function createNewThread(title, category, content) {
+    const threadsList = document.querySelector('.threads-list');
+    if (!threadsList) return;
+    
+    const categoryIcons = {
+        'general': '💼',
+        'predictions': '🎯',
+        'markets': '📈',
+        'fed': '🏛️',
+        'strategy': '🧠'
+    };
+    
+    const categoryNames = {
+        'general': 'GENERAL',
+        'predictions': 'PREDICTIONS',
+        'markets': 'MARKETS',
+        'fed': 'FED',
+        'strategy': 'STRATEGY'
+    };
+    
+    const newThread = document.createElement('div');
+    newThread.className = 'thread-item new-thread';
+    newThread.innerHTML = `
+        <div class="thread-meta">
+            <div class="thread-status">🆕 NEW</div>
+            <div class="thread-category">${categoryIcons[category]} ${categoryNames[category]}</div>
+            <div class="thread-time">Just now</div>
+        </div>
+        <div class="thread-title">${title}</div>
+        <div class="thread-preview">${content.substring(0, 120)}${content.length > 120 ? '...' : ''}</div>
+        <div class="thread-footer">
+            <div class="thread-author">
+                <div class="author-avatar">🌟</div>
+                <div class="author-name">YOU</div>
+                <div class="author-badge newcomer">NEWCOMER</div>
+            </div>
+            <div class="thread-stats">
+                <span class="stat-replies">0 replies</span>
+                <span class="stat-likes">👍 0</span>
+                <span class="stat-views">1 view</span>
+            </div>
+        </div>
+    `;
+    
+    // Add to top of threads list
+    threadsList.insertBefore(newThread, threadsList.firstChild);
+    
+    // Add click handler
+    newThread.addEventListener('click', function(e) {
+        if (e.target.closest('.thread-stats')) return;
+        showToast(`📖 Opening your discussion: ${title}`, 'info');
+    });
+    
+    // Add flash effect
+    newThread.style.background = 'rgba(0, 255, 65, 0.1)';
+    setTimeout(() => {
+        newThread.style.background = '';
+        newThread.classList.remove('new-thread');
+    }, 3000);
+}
+
+// Filter threads by category
+function filterThreadsByCategory(category) {
+    const threads = document.querySelectorAll('.thread-item');
+    
+    threads.forEach(thread => {
+        const threadCategory = thread.querySelector('.thread-category');
+        if (!threadCategory) return;
+        
+        const categoryText = threadCategory.textContent.toLowerCase();
+        
+        if (category === 'general' || categoryText.includes(category.substring(0, 3))) {
+            thread.style.display = 'block';
+            thread.style.animation = 'fadeIn 0.3s ease';
+        } else {
+            thread.style.display = 'none';
+        }
+    });
+}
+
+// Apply thread filter (recent, hot, top)
+function applyThreadFilter(filter) {
+    const threads = document.querySelectorAll('.thread-item');
+    const threadsArray = Array.from(threads);
+    
+    // Sort threads based on filter
+    let sortedThreads;
+    
+    switch (filter) {
+        case 'hot':
+            sortedThreads = threadsArray.sort((a, b) => {
+                const aHot = a.classList.contains('hot') ? 1 : 0;
+                const bHot = b.classList.contains('hot') ? 1 : 0;
+                return bHot - aHot;
+            });
+            break;
+        case 'top':
+            sortedThreads = threadsArray.sort((a, b) => {
+                const aLikes = parseInt(a.querySelector('.stat-likes').textContent.match(/\d+/)?.[0] || 0);
+                const bLikes = parseInt(b.querySelector('.stat-likes').textContent.match(/\d+/)?.[0] || 0);
+                return bLikes - aLikes;
+            });
+            break;
+        default: // recent
+            sortedThreads = threadsArray.sort((a, b) => {
+                const aTime = a.querySelector('.thread-time').textContent;
+                const bTime = b.querySelector('.thread-time').textContent;
+                // Simple time comparison (in real app would use actual timestamps)
+                return aTime.includes('hour') ? -1 : 1;
+            });
+    }
+    
+    // Reorder threads in DOM
+    const threadsList = document.querySelector('.threads-list');
+    const loadMoreSection = document.querySelector('.load-more-section');
+    
+    sortedThreads.forEach(thread => {
+        threadsList.insertBefore(thread, loadMoreSection);
+    });
+}
+
+// Load more threads
+function loadMoreThreads() {
+    const loadMoreBtn = document.querySelector('.load-more-btn');
+    
+    loadMoreBtn.textContent = 'LOADING...';
+    loadMoreBtn.disabled = true;
+    
+    setTimeout(() => {
+        // Simulate loading more threads
+        const threadsList = document.querySelector('.threads-list');
+        const loadMoreSection = document.querySelector('.load-more-section');
+        
+        // Add a few more simulated threads
+        const newThreadsData = [
+            {
+                category: '💼 GENERAL',
+                time: '2 days ago',
+                title: 'Understanding Economic Cycles: A Beginner\'s Guide',
+                preview: 'Can someone explain the different phases of economic cycles and how they relate to market movements? I\'m trying to understand...',
+                author: 'LearningEcon',
+                badge: 'newcomer',
+                replies: 23,
+                likes: 15,
+                views: 445
+            },
+            {
+                category: '📈 MARKETS',
+                time: '3 days ago',
+                title: 'Tech Sector Rotation: Signs of a Shift?',
+                preview: 'Seeing unusual volume patterns in tech vs value stocks. Could this be the start of a major sector rotation? Looking at the data...',
+                author: 'SectorAnalyst',
+                badge: 'expert',
+                replies: 18,
+                likes: 11,
+                views: 332
+            }
+        ];
+        
+        newThreadsData.forEach(threadData => {
+            const newThread = document.createElement('div');
+            newThread.className = 'thread-item';
+            newThread.innerHTML = `
+                <div class="thread-meta">
+                    <div class="thread-category">${threadData.category}</div>
+                    <div class="thread-time">${threadData.time}</div>
+                </div>
+                <div class="thread-title">${threadData.title}</div>
+                <div class="thread-preview">${threadData.preview}</div>
+                <div class="thread-footer">
+                    <div class="thread-author">
+                        <div class="author-avatar">📊</div>
+                        <div class="author-name">${threadData.author}</div>
+                        <div class="author-badge ${threadData.badge}">${threadData.badge.toUpperCase()}</div>
+                    </div>
+                    <div class="thread-stats">
+                        <span class="stat-replies">${threadData.replies} replies</span>
+                        <span class="stat-likes">👍 ${threadData.likes}</span>
+                        <span class="stat-views">${threadData.views} views</span>
+                    </div>
+                </div>
+            `;
+            
+            threadsList.insertBefore(newThread, loadMoreSection);
+            
+            // Add click handler
+            newThread.addEventListener('click', function(e) {
+                if (e.target.closest('.thread-stats')) return;
+                showToast(`📖 Opening: ${threadData.title}`, 'info');
+            });
+        });
+        
+        loadMoreBtn.textContent = 'LOAD MORE DISCUSSIONS';
+        loadMoreBtn.disabled = false;
+        
+        showToast('📚 Loaded more discussions', 'success');
+    }, 1000);
+}
+
+// Update forum stats with real-time changes
+function updateForumStats() {
+    const statValues = document.querySelectorAll('.forum-stat .stat-value');
+    
+    if (statValues.length >= 4) {
+        // Simulate small increases in forum activity
+        const members = statValues[0];
+        const discussions = statValues[1];
+        const posts = statValues[2];
+        const online = statValues[3];
+        
+        // Random small increases
+        if (Math.random() > 0.7) {
+            const currentDiscussions = parseInt(discussions.textContent.replace(',', ''));
+            discussions.textContent = (currentDiscussions + 1).toLocaleString();
+            discussions.parentElement.classList.add('flash-positive');
+            setTimeout(() => discussions.parentElement.classList.remove('flash-positive'), 500);
+        }
+        
+        if (Math.random() > 0.5) {
+            const currentPosts = parseInt(posts.textContent.replace(',', ''));
+            posts.textContent = (currentPosts + Math.floor(Math.random() * 3) + 1).toLocaleString();
+            posts.parentElement.classList.add('flash-positive');
+            setTimeout(() => posts.parentElement.classList.remove('flash-positive'), 500);
+        }
+        
+        // Update online count
+        const currentOnline = parseInt(online.textContent);
+        const newOnline = Math.max(15, currentOnline + Math.floor(Math.random() * 6) - 3);
+        online.textContent = newOnline;
+        
+        // Update online users list
+        updateOnlineUsersList(newOnline);
+    }
+    
+    // Schedule next update
+    setTimeout(() => {
+        updateForumStats();
+    }, 30000);
+}
+
+// Update online users list
+function updateOnlineUsersList(count) {
+    const onlineHeader = document.querySelector('.online-header');
+    if (onlineHeader) {
+        onlineHeader.textContent = `👥 ONLINE NOW (${count})`;
+    }
+    
+    const moreUsersText = document.querySelector('.online-users-more');
+    if (moreUsersText) {
+        const visibleUsers = 5;
+        const hiddenUsers = Math.max(0, count - visibleUsers);
+        moreUsersText.textContent = `+${hiddenUsers} more forecasters online`;
+    }
+}

@@ -1178,6 +1178,282 @@
             </div>
         </div>
 
+        <!-- Community Forum Tab Content -->
+        <div id="community-tab" class="tab-content" style="display: none;">
+            <div class="community-header">
+                <div class="community-title">💬 COMMUNITY FORUM</div>
+                <div class="community-subtitle">Economic Discussion • Market Insights • Strategy Sharing</div>
+                <div class="forum-stats">
+                    <div class="forum-stat">
+                        <div class="stat-value">2,847</div>
+                        <div class="stat-label">MEMBERS</div>
+                    </div>
+                    <div class="forum-stat">
+                        <div class="stat-value">1,249</div>
+                        <div class="stat-label">DISCUSSIONS</div>
+                    </div>
+                    <div class="forum-stat">
+                        <div class="stat-value">8,792</div>
+                        <div class="stat-label">POSTS</div>
+                    </div>
+                    <div class="forum-stat">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">ONLINE NOW</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-main">
+                <!-- Forum Categories -->
+                <div class="forum-categories">
+                    <div class="category-header">📁 DISCUSSION CATEGORIES</div>
+                    <div class="categories-grid">
+                        <div class="category-item active" data-category="general">
+                            <div class="category-icon">💼</div>
+                            <div class="category-info">
+                                <div class="category-name">General Economics</div>
+                                <div class="category-count">342 threads</div>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="predictions">
+                            <div class="category-icon">🎯</div>
+                            <div class="category-info">
+                                <div class="category-name">Prediction Analysis</div>
+                                <div class="category-count">189 threads</div>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="markets">
+                            <div class="category-icon">📈</div>
+                            <div class="category-info">
+                                <div class="category-name">Market Commentary</div>
+                                <div class="category-count">423 threads</div>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="fed">
+                            <div class="category-icon">🏛️</div>
+                            <div class="category-info">
+                                <div class="category-name">Federal Reserve</div>
+                                <div class="category-count">156 threads</div>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="strategy">
+                            <div class="category-icon">🧠</div>
+                            <div class="category-info">
+                                <div class="category-name">Strategy & Tips</div>
+                                <div class="category-count">139 threads</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Post Section -->
+                <div class="new-post-section">
+                    <button class="new-post-btn" onclick="toggleNewPost()">✍️ START NEW DISCUSSION</button>
+                    <div class="new-post-form" id="newPostForm" style="display: none;">
+                        <div class="form-header">💬 Create New Discussion</div>
+                        <input type="text" class="post-title-input" placeholder="Discussion title..." maxlength="100">
+                        <select class="post-category-select">
+                            <option value="general">💼 General Economics</option>
+                            <option value="predictions">🎯 Prediction Analysis</option>
+                            <option value="markets">📈 Market Commentary</option>
+                            <option value="fed">🏛️ Federal Reserve</option>
+                            <option value="strategy">🧠 Strategy & Tips</option>
+                        </select>
+                        <textarea class="post-content-input" placeholder="Share your thoughts, analysis, or questions..." rows="4"></textarea>
+                        <div class="form-actions">
+                            <button class="submit-post-btn" onclick="submitNewPost()">POST DISCUSSION</button>
+                            <button class="cancel-post-btn" onclick="toggleNewPost()">CANCEL</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discussion Threads -->
+                <div class="discussion-threads">
+                    <div class="threads-header">
+                        <div class="threads-title">🔥 RECENT DISCUSSIONS</div>
+                        <div class="thread-filters">
+                            <button class="filter-btn active" data-filter="recent">Recent</button>
+                            <button class="filter-btn" data-filter="hot">Hot</button>
+                            <button class="filter-btn" data-filter="top">Top</button>
+                        </div>
+                    </div>
+
+                    <div class="threads-list">
+                        <!-- Hot Thread -->
+                        <div class="thread-item hot">
+                            <div class="thread-meta">
+                                <div class="thread-status">🔥 HOT</div>
+                                <div class="thread-category">📈 MARKETS</div>
+                                <div class="thread-time">2 hours ago</div>
+                            </div>
+                            <div class="thread-title">Fed Pivot Timeline: Are We Seeing Early Signs?</div>
+                            <div class="thread-preview">Based on recent CPI data and Powell's latest comments, I'm seeing some subtle shifts in Fed rhetoric. The 3M-10Y inversion at 107 bps suggests...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">📊</div>
+                                    <div class="author-name">DataWizard</div>
+                                    <div class="author-badge expert">EXPERT</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">47 replies</span>
+                                    <span class="stat-likes">👍 23</span>
+                                    <span class="stat-views">1.2K views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Thread -->
+                        <div class="thread-item">
+                            <div class="thread-meta">
+                                <div class="thread-category">🎯 PREDICTIONS</div>
+                                <div class="thread-time">4 hours ago</div>
+                            </div>
+                            <div class="thread-title">My CPI Prediction Strategy - 85% Accuracy Rate</div>
+                            <div class="thread-preview">After tracking inflation data for 18 months, I've developed a methodology that combines housing data, energy trends, and labor market indicators...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">🎯</div>
+                                    <div class="author-name">TargetMaster</div>
+                                    <div class="author-badge prophet">PROPHET</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">32 replies</span>
+                                    <span class="stat-likes">👍 18</span>
+                                    <span class="stat-views">856 views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Discussion Thread -->
+                        <div class="thread-item">
+                            <div class="thread-meta">
+                                <div class="thread-category">🏛️ FED</div>
+                                <div class="thread-time">6 hours ago</div>
+                            </div>
+                            <div class="thread-title">Yield Curve Inversion: Historical Context vs Current Cycle</div>
+                            <div class="thread-preview">Looking at the current 3M-10Y spread of +107 bps, how does this compare to previous inversion cycles? The duration (47 days) seems significant...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">🦅</div>
+                                    <div class="author-name">EconomicEagle</div>
+                                    <div class="author-badge master">MASTER</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">15 replies</span>
+                                    <span class="stat-likes">👍 12</span>
+                                    <span class="stat-views">445 views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strategy Thread -->
+                        <div class="thread-item">
+                            <div class="thread-meta">
+                                <div class="thread-category">🧠 STRATEGY</div>
+                                <div class="thread-time">8 hours ago</div>
+                            </div>
+                            <div class="thread-title">Confidence Calibration: When to be Aggressive vs Conservative</div>
+                            <div class="thread-preview">Been experimenting with different confidence levels based on data volatility. High volatility periods seem to favor lower confidence (60-70%)...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">🚀</div>
+                                    <div class="author-name">RocketTrader</div>
+                                    <div class="author-badge expert">EXPERT</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">28 replies</span>
+                                    <span class="stat-likes">👍 15</span>
+                                    <span class="stat-views">672 views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Newcomer Thread -->
+                        <div class="thread-item">
+                            <div class="thread-meta">
+                                <div class="thread-category">💼 GENERAL</div>
+                                <div class="thread-time">12 hours ago</div>
+                            </div>
+                            <div class="thread-title">New to Economic Forecasting - Best Resources to Start?</div>
+                            <div class="thread-preview">Just joined Trendgeist and feeling overwhelmed by all the data. What are the key indicators I should focus on first? Any recommended reading?...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">🌱</div>
+                                    <div class="author-name">NewcomerNick</div>
+                                    <div class="author-badge newcomer">NEWCOMER</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">41 replies</span>
+                                    <span class="stat-likes">👍 27</span>
+                                    <span class="stat-views">923 views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Thread -->
+                        <div class="thread-item">
+                            <div class="thread-meta">
+                                <div class="thread-category">📈 MARKETS</div>
+                                <div class="thread-time">1 day ago</div>
+                            </div>
+                            <div class="thread-title">Phillips Curve Breakdown: Is the Relationship Still Valid?</div>
+                            <div class="thread-preview">With unemployment at 3.9% and inflation at 3.2%, the traditional inverse relationship seems to be holding. But looking at the correlation data...</div>
+                            <div class="thread-footer">
+                                <div class="thread-author">
+                                    <div class="author-avatar">📊</div>
+                                    <div class="author-name">DataWizard</div>
+                                    <div class="author-badge expert">EXPERT</div>
+                                </div>
+                                <div class="thread-stats">
+                                    <span class="stat-replies">19 replies</span>
+                                    <span class="stat-likes">👍 14</span>
+                                    <span class="stat-views">567 views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More -->
+                    <div class="load-more-section">
+                        <button class="load-more-btn" onclick="loadMoreThreads()">LOAD MORE DISCUSSIONS</button>
+                    </div>
+                </div>
+
+                <!-- Online Users -->
+                <div class="online-users">
+                    <div class="online-header">👥 ONLINE NOW (24)</div>
+                    <div class="users-list">
+                        <div class="online-user">
+                            <div class="user-avatar legendary">🦅</div>
+                            <div class="user-name">EconomicEagle</div>
+                            <div class="user-status">📊 Analyzing yields</div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar mythic">🎯</div>
+                            <div class="user-name">TargetMaster</div>
+                            <div class="user-status">💭 Writing analysis</div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar rare">📊</div>
+                            <div class="user-name">DataWizard</div>
+                            <div class="user-status">🔥 In hot thread</div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar">🚀</div>
+                            <div class="user-name">RocketTrader</div>
+                            <div class="user-status">💬 Replying</div>
+                        </div>
+                        <div class="online-user">
+                            <div class="user-avatar">🌱</div>
+                            <div class="user-name">NewcomerNick</div>
+                            <div class="user-status">📖 Reading guides</div>
+                        </div>
+                        <div class="online-users-more">+19 more forecasters online</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- News Ticker -->
         <div class="news-ticker">
             <div class="ticker-content">
