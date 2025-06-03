@@ -1050,6 +1050,16 @@ function switchTerminalTab(tabName, element) {
         }
         // Initialize community forum
         initializeCommunityForum();
+    } else if (tabName === 'predictions') {
+        // Hide main layout and show predictions tab
+        mainLayout.style.display = 'none';
+        const predictionsTab = document.getElementById('predictions-tab');
+        if (predictionsTab) {
+            predictionsTab.style.display = 'block';
+            predictionsTab.classList.add('active');
+        }
+        // Initialize live predictions
+        initializeLivePredictions();
     } else {
         // Show main layout and hide other tabs
         mainLayout.style.display = 'flex';
@@ -2511,3 +2521,387 @@ function updateOnlineUsersList(count) {
         moreUsersText.textContent = `+${hiddenUsers} more forecasters online`;
     }
 }
+
+// Enhanced Terminal Interface Functions
+// =============================================================================
+
+// =============================================================================
+// Live Predictions Functions
+// =============================================================================
+
+// Initialize live predictions functionality
+function initializeLivePredictions() {
+    // Initialize market filters
+    initializeMarketFilters();
+    
+    // Initialize countdown timers
+    initializeCountdownTimers();
+    
+    // Initialize betting functionality
+    initializeBettingSystem();
+    
+    // Update market data
+    updatePredictionMarkets();
+    
+    console.log('Live Predictions initialized');
+}
+
+// Initialize market filtering
+function initializeMarketFilters() {
+    const filterButtons = document.querySelectorAll('.market-filters .filter-btn');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            const filter = button.getAttribute('data-filter');
+            filterMarkets(filter);
+        });
+    });
+}
+
+// Filter markets by category
+function filterMarkets(category) {
+    const markets = document.querySelectorAll('.markets-grid .prediction-market');
+    
+    markets.forEach(market => {
+        if (category === 'all') {
+            market.style.display = 'block';
+        } else if (category === 'closing') {
+            // Show markets closing within 24 hours
+            const countdown = market.querySelector('.countdown');
+            if (countdown && isClosingSoon(countdown.getAttribute('data-deadline'))) {
+                market.style.display = 'block';
+            } else {
+                market.style.display = 'none';
+            }
+        } else {
+            const marketCategory = market.getAttribute('data-category');
+            if (marketCategory === category) {
+                market.style.display = 'block';
+            } else {
+                market.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Check if market is closing soon (within 24 hours)
+function isClosingSoon(deadline) {
+    const deadlineTime = new Date(deadline);
+    const now = new Date();
+    const timeDiff = deadlineTime - now;
+    return timeDiff > 0 && timeDiff <= 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+}
+
+// Initialize countdown timers
+function initializeCountdownTimers() {
+    const countdowns = document.querySelectorAll('.countdown');
+    
+    countdowns.forEach(countdown => {
+        const deadline = countdown.getAttribute('data-deadline');
+        if (deadline) {
+            updateCountdown(countdown, deadline);
+            // Update every minute
+            setInterval(() => updateCountdown(countdown, deadline), 60000);
+        }
+    });
+}
+
+// Update individual countdown
+function updateCountdown(element, deadline) {
+    const deadlineTime = new Date(deadline);
+    const now = new Date();
+    const timeDiff = deadlineTime - now;
+    
+    if (timeDiff <= 0) {
+        element.textContent = 'CLOSED';
+        element.classList.add('closed');
+        return;
+    }
+    
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) {
+        element.textContent = `${days}d ${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+        element.textContent = `${hours}h ${minutes}m`;
+    } else {
+        element.textContent = `${minutes}m`;
+    }
+    
+    // Add warning class if closing soon
+    if (timeDiff <= 6 * 60 * 60 * 1000) { // 6 hours
+        element.classList.add('closing-soon');
+    }
+}
+
+// Initialize betting system
+function initializeBettingSystem() {
+    // Store current bet details
+    window.currentBet = {
+        market: null,
+        side: null,
+        odds: null
+    };
+    
+    // Initialize amount input listener
+    const betAmountInput = document.getElementById('betAmount');
+    if (betAmountInput) {
+        betAmountInput.addEventListener('input', updatePotentialPayout);
+    }
+}
+
+// Open bet modal
+function openBetModal(market, side, odds) {
+    window.currentBet = { market, side, odds };
+    
+    const modal = document.getElementById('betModal');
+    const marketName = document.getElementById('betMarketName');
+    const sideDisplay = document.getElementById('betSideDisplay');
+    const oddsDisplay = document.getElementById('betOddsDisplay');
+    
+    // Set market details
+    marketName.textContent = getMarketDisplayName(market);
+    sideDisplay.textContent = side.toUpperCase();
+    sideDisplay.className = `bet-side ${side}`;
+    oddsDisplay.textContent = `${odds}x`;
+    
+    // Reset form
+    document.getElementById('betAmount').value = '';
+    updatePotentialPayout();
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Add event listener for clicking outside modal
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeBetModal();
+        }
+    });
+}
+
+// Close bet modal
+function closeBetModal() {
+    const modal = document.getElementById('betModal');
+    modal.style.display = 'none';
+    window.currentBet = { market: null, side: null, odds: null };
+}
+
+// Set bet amount from quick buttons
+function setBetAmount(amount) {
+    const input = document.getElementById('betAmount');
+    input.value = amount;
+    updatePotentialPayout();
+}
+
+// Update potential payout calculation
+function updatePotentialPayout() {
+    const betAmount = parseFloat(document.getElementById('betAmount').value) || 0;
+    const odds = window.currentBet.odds || 1;
+    
+    const potentialPayout = Math.floor(betAmount * odds);
+    const potentialProfit = potentialPayout - betAmount;
+    
+    document.getElementById('potentialPayout').textContent = `${potentialPayout} tokens`;
+    document.getElementById('potentialProfit').textContent = `+${potentialProfit} tokens`;
+    
+    // Update profit color
+    const profitElement = document.getElementById('potentialProfit');
+    if (potentialProfit > 0) {
+        profitElement.style.color = 'var(--terminal-green)';
+    } else {
+        profitElement.style.color = 'var(--terminal-gray)';
+    }
+}
+
+// Confirm bet placement
+function confirmBet() {
+    const betAmount = parseFloat(document.getElementById('betAmount').value);
+    const { market, side, odds } = window.currentBet;
+    
+    // Validation
+    if (!betAmount || betAmount <= 0) {
+        showToast('Please enter a valid bet amount', 'error');
+        return;
+    }
+    
+    if (betAmount > 8432) { // Current token balance
+        showToast('Insufficient tokens', 'error');
+        return;
+    }
+    
+    // Simulate bet placement
+    placeBet(market, side, odds, betAmount);
+    
+    // Close modal
+    closeBetModal();
+    
+    // Show success message
+    showToast(`Bet placed: ${betAmount} tokens on ${side.toUpperCase()}`, 'success');
+    
+    // Update user's bet list
+    addToActiveBets(market, side, odds, betAmount);
+}
+
+// Place bet (simulate API call)
+function placeBet(market, side, odds, amount) {
+    console.log(`Placing bet: ${amount} tokens on ${market} - ${side} at ${odds}x odds`);
+    
+    // Here you would make an API call to your backend
+    // For now, we'll just simulate it
+    const betData = {
+        market,
+        side,
+        odds,
+        amount,
+        timestamp: new Date().toISOString(),
+        status: 'pending'
+    };
+    
+    // Store in localStorage for demo purposes
+    const activeBets = JSON.parse(localStorage.getItem('activeBets') || '[]');
+    activeBets.push(betData);
+    localStorage.setItem('activeBets', JSON.stringify(activeBets));
+}
+
+// Add bet to active bets display
+function addToActiveBets(market, side, odds, amount) {
+    const betsList = document.querySelector('.bets-list');
+    
+    const betItem = document.createElement('div');
+    betItem.className = 'bet-item';
+    betItem.innerHTML = `
+        <div class="bet-market">${getMarketDisplayName(market)}</div>
+        <div class="bet-side ${side}">${side.toUpperCase()}</div>
+        <div class="bet-amount">${amount} tokens</div>
+        <div class="bet-odds">${odds}x</div>
+        <div class="bet-potential">+${Math.floor(amount * odds - amount)} tokens</div>
+        <div class="bet-status pending">PENDING</div>
+    `;
+    
+    betsList.appendChild(betItem);
+}
+
+// Get display name for market
+function getMarketDisplayName(market) {
+    const marketNames = {
+        'cpi_above_3_3': 'CPI > 3.3%',
+        'fed_decision': 'Fed Rate Decision',
+        'nfp_200k': 'NFP > 200K',
+        'gdp_q2': 'Q2 GDP > 2.5%',
+        'unemployment_38': 'Unemployment < 3.8%',
+        'retail_sales': 'Retail Sales > 0.5%',
+        'housing_starts': 'Housing Starts > 1.4M',
+        'industrial_prod': 'Industrial Prod > 0.3%'
+    };
+    
+    return marketNames[market] || market;
+}
+
+// Update prediction markets data
+function updatePredictionMarkets() {
+    // Simulate real-time data updates
+    updateMarketOdds();
+    updateMarketVolumes();
+    updatePredictionStats();
+}
+
+// Update market odds (simulate market movement)
+function updateMarketOdds() {
+    const oddsElements = document.querySelectorAll('.option-odds, .choice-odds');
+    
+    oddsElements.forEach(element => {
+        // Small random fluctuation
+        const currentOdds = parseFloat(element.textContent);
+        const fluctuation = (Math.random() - 0.5) * 0.1; // ±0.05x
+        const newOdds = Math.max(1.1, currentOdds + fluctuation);
+        
+        element.textContent = `${newOdds.toFixed(1)}x`;
+        
+        // Add visual indicator for changes
+        if (fluctuation > 0) {
+            element.classList.add('odds-up');
+            setTimeout(() => element.classList.remove('odds-up'), 1000);
+        } else if (fluctuation < 0) {
+            element.classList.add('odds-down');
+            setTimeout(() => element.classList.remove('odds-down'), 1000);
+        }
+    });
+}
+
+// Update market volumes
+function updateMarketVolumes() {
+    const volumeElements = document.querySelectorAll('.bet-volume, .choice-volume, .market-volume');
+    
+    volumeElements.forEach(element => {
+        const currentVolume = element.textContent.replace(/[$,]/g, '');
+        const numericVolume = parseFloat(currentVolume);
+        
+        // Small random increase
+        const increase = Math.random() * numericVolume * 0.01; // Up to 1% increase
+        const newVolume = Math.floor(numericVolume + increase);
+        
+        if (element.textContent.includes('$')) {
+            element.textContent = `$${newVolume.toLocaleString()}`;
+        } else {
+            element.textContent = `$${newVolume.toLocaleString()}`;
+        }
+    });
+}
+
+// Update prediction stats
+function updatePredictionStats() {
+    // Update total wagered
+    const totalWageredElement = document.querySelector('.pred-stat .stat-value');
+    if (totalWageredElement && totalWageredElement.textContent.includes('$')) {
+        const current = parseFloat(totalWageredElement.textContent.replace(/[$K]/g, ''));
+        const increase = Math.random() * 2; // Up to $2K increase
+        const newTotal = Math.floor(current + increase);
+        totalWageredElement.textContent = `$${newTotal}K`;
+    }
+}
+
+// Load active bets from storage
+function loadActiveBets() {
+    const activeBets = JSON.parse(localStorage.getItem('activeBets') || '[]');
+    const betsList = document.querySelector('.bets-list');
+    
+    // Clear existing bets (except demo ones)
+    const demoBets = betsList.querySelectorAll('.bet-item');
+    
+    activeBets.forEach(bet => {
+        addToActiveBets(bet.market, bet.side, bet.odds, bet.amount);
+    });
+}
+
+// Start prediction market updates
+function startPredictionUpdates() {
+    // Update every 30 seconds
+    setInterval(updatePredictionMarkets, 30000);
+    
+    // Update countdowns every minute
+    setInterval(() => {
+        const countdowns = document.querySelectorAll('.countdown');
+        countdowns.forEach(countdown => {
+            const deadline = countdown.getAttribute('data-deadline');
+            if (deadline) {
+                updateCountdown(countdown, deadline);
+            }
+        });
+    }, 60000);
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('predictions-tab')) {
+        startPredictionUpdates();
+        loadActiveBets();
+    }
+});

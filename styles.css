@@ -3335,4 +3335,765 @@ body {
 
 .flash-positive {
     animation: flash-green 0.5s ease;
+}
+
+/* =============================================================================
+   Live Predictions Styles
+   ============================================================================= */
+
+/* Predictions Header */
+.predictions-header {
+    background: var(--terminal-secondary);
+    border: 1px solid var(--terminal-border);
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.predictions-title {
+    color: var(--terminal-orange);
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.predictions-subtitle {
+    color: var(--terminal-gray);
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.predictions-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.pred-stat {
+    text-align: center;
+}
+
+.pred-stat .stat-value {
+    color: var(--terminal-green);
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+}
+
+.pred-stat .stat-label {
+    color: var(--terminal-gray);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* Predictions Main */
+.predictions-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 16px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Featured Predictions */
+.featured-predictions {
+    margin-bottom: 24px;
+}
+
+.featured-header {
+    color: var(--terminal-orange);
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.prediction-market {
+    background: var(--terminal-secondary);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.prediction-market:hover {
+    border-color: var(--terminal-orange);
+    box-shadow: 0 0 8px rgba(255, 165, 0, 0.2);
+}
+
+.prediction-market.featured {
+    border-color: var(--terminal-orange);
+    background: linear-gradient(145deg, var(--terminal-secondary), var(--terminal-bg));
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.market-title {
+    color: var(--terminal-blue);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.market-deadline {
+    text-align: right;
+}
+
+.deadline-label {
+    color: var(--terminal-gray);
+    font-size: 10px;
+    display: block;
+}
+
+.countdown {
+    color: var(--terminal-orange);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.countdown.closing-soon {
+    color: var(--terminal-red);
+    animation: pulse 1s infinite;
+}
+
+.countdown.closed {
+    color: var(--terminal-gray);
+}
+
+.market-question {
+    color: var(--terminal-text);
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+/* Market Options */
+.market-options {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.market-options.simple {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.market-options.multi-option {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-side {
+    flex: 1;
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 12px;
+    text-align: center;
+}
+
+.yes-side {
+    border-color: var(--terminal-green);
+}
+
+.no-side {
+    border-color: var(--terminal-red);
+}
+
+.option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.option-label {
+    color: var(--terminal-text);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.option-odds {
+    color: var(--terminal-orange);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.option-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.bet-volume, .bet-percentage {
+    color: var(--terminal-gray);
+    font-size: 11px;
+}
+
+.bet-btn {
+    background: var(--terminal-orange);
+    color: var(--terminal-bg);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.bet-btn:hover {
+    background: #ff9500;
+    transform: translateY(-1px);
+}
+
+.bet-btn.compact {
+    padding: 6px 12px;
+    font-size: 10px;
+}
+
+.yes-btn {
+    background: var(--terminal-green);
+}
+
+.yes-btn:hover {
+    background: #00ff88;
+}
+
+.no-btn {
+    background: var(--terminal-red);
+}
+
+.no-btn:hover {
+    background: #ff5555;
+}
+
+/* Multi-option choices */
+.option-choice {
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.option-choice.active {
+    border-color: var(--terminal-green);
+    background: rgba(0, 255, 136, 0.1);
+}
+
+.choice-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.choice-label {
+    color: var(--terminal-text);
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.choice-odds {
+    color: var(--terminal-orange);
+    font-size: 11px;
+}
+
+.choice-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+}
+
+.choice-volume, .choice-percentage {
+    color: var(--terminal-gray);
+    font-size: 10px;
+}
+
+.choice-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+}
+
+/* Simple options */
+.simple-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+.option-label {
+    color: var(--terminal-text);
+    font-size: 12px;
+}
+
+/* Market Info */
+.market-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--terminal-border);
+}
+
+.info-item {
+    text-align: center;
+}
+
+.info-label {
+    color: var(--terminal-gray);
+    font-size: 10px;
+    display: block;
+}
+
+.info-value {
+    color: var(--terminal-text);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.market-volume {
+    color: var(--terminal-blue);
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Market Filters */
+.markets-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.markets-title {
+    color: var(--terminal-blue);
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.market-filters {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-btn {
+    background: var(--terminal-bg);
+    color: var(--terminal-gray);
+    border: 1px solid var(--terminal-border);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--terminal-orange);
+    color: var(--terminal-orange);
+}
+
+.filter-btn.active {
+    background: var(--terminal-orange);
+    color: var(--terminal-bg);
+    border-color: var(--terminal-orange);
+}
+
+/* Markets Grid */
+.markets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Your Active Bets */
+.your-bets {
+    background: var(--terminal-secondary);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 16px;
+}
+
+.bets-header {
+    color: var(--terminal-orange);
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.bets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bet-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    align-items: center;
+}
+
+.bet-market {
+    color: var(--terminal-text);
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.bet-side {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.bet-side.yes {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+}
+
+.bet-side.no {
+    background: var(--terminal-red);
+    color: var(--terminal-bg);
+}
+
+.bet-side.hold {
+    background: var(--terminal-blue);
+    color: var(--terminal-bg);
+}
+
+.bet-amount, .bet-odds, .bet-potential {
+    color: var(--terminal-gray);
+    font-size: 11px;
+    text-align: center;
+}
+
+.bet-potential {
+    color: var(--terminal-green);
+}
+
+.bet-status {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.bet-status.pending {
+    background: var(--terminal-yellow);
+    color: var(--terminal-bg);
+}
+
+.bet-status.won {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+}
+
+.bet-status.lost {
+    background: var(--terminal-red);
+    color: var(--terminal-bg);
+}
+
+/* Bet Modal */
+.bet-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--terminal-bg);
+    border: 2px solid var(--terminal-orange);
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--terminal-border);
+}
+
+.modal-title {
+    color: var(--terminal-orange);
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--terminal-gray);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.modal-close:hover {
+    color: var(--terminal-orange);
+}
+
+.modal-body {
+    padding: 16px;
+}
+
+.bet-details {
+    margin-bottom: 20px;
+}
+
+.bet-market-name {
+    color: var(--terminal-blue);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.bet-side-display, .bet-odds-display {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--terminal-gray);
+    font-size: 12px;
+}
+
+.bet-input-section {
+    margin-bottom: 20px;
+}
+
+.bet-amount-input label {
+    color: var(--terminal-text);
+    font-size: 12px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.amount-input-group {
+    margin-bottom: 8px;
+}
+
+.amount-input-group input {
+    width: 100%;
+    background: var(--terminal-secondary);
+    color: var(--terminal-text);
+    border: 1px solid var(--terminal-border);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.amount-input-group input:focus {
+    outline: none;
+    border-color: var(--terminal-orange);
+}
+
+.amount-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.amount-btn {
+    background: var(--terminal-secondary);
+    color: var(--terminal-text);
+    border: 1px solid var(--terminal-border);
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.amount-btn:hover {
+    border-color: var(--terminal-orange);
+    color: var(--terminal-orange);
+}
+
+.balance-info {
+    color: var(--terminal-gray);
+    font-size: 11px;
+}
+
+.balance-amount {
+    color: var(--terminal-green);
+}
+
+.potential-payout {
+    background: var(--terminal-secondary);
+    border: 1px solid var(--terminal-border);
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.payout-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.payout-label {
+    color: var(--terminal-gray);
+    font-size: 12px;
+}
+
+.payout-amount, .payout-profit {
+    color: var(--terminal-green);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--terminal-border);
+}
+
+.cancel-bet-btn, .confirm-bet-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-bet-btn {
+    background: var(--terminal-secondary);
+    color: var(--terminal-gray);
+    border: 1px solid var(--terminal-border);
+}
+
+.cancel-bet-btn:hover {
+    border-color: var(--terminal-red);
+    color: var(--terminal-red);
+}
+
+.confirm-bet-btn {
+    background: var(--terminal-green);
+    color: var(--terminal-bg);
+}
+
+.confirm-bet-btn:hover {
+    background: #00ff88;
+    transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes odds-up {
+    0% { color: var(--terminal-green); }
+    100% { color: var(--terminal-orange); }
+}
+
+@keyframes odds-down {
+    0% { color: var(--terminal-red); }
+    100% { color: var(--terminal-orange); }
+}
+
+.odds-up {
+    animation: odds-up 1s ease;
+}
+
+.odds-down {
+    animation: odds-down 1s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .predictions-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .markets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bet-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .predictions-header {
+        padding: 12px;
+    }
+    
+    .predictions-title {
+        font-size: 16px;
+    }
+    
+    .predictions-main {
+        padding: 0 8px;
+    }
+    
+    .market-options {
+        flex-direction: column;
+    }
+    
+    .market-info {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .market-filters {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .filter-btn {
+        padding: 4px 8px;
+        font-size: 9px;
+    }
+    
+    .modal-content {
+        width: 95vw;
+        margin: 20px;
+    }
 } 
