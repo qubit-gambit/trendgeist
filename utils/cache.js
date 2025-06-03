@@ -6,9 +6,17 @@ class CacheManager {
     this.isConnected = false;
     this.retryCount = 0;
     this.maxRetries = 3;
+    this.useRedis = process.env.USE_REDIS === 'true'; // Only try Redis if explicitly enabled
   }
 
   async connect() {
+    // Skip Redis connection attempt unless explicitly enabled
+    if (!this.useRedis) {
+      console.log('📝 Using in-memory cache (Redis disabled)');
+      this.setupMemoryFallback();
+      return;
+    }
+
     try {
       this.client = redis.createClient({
         host: process.env.REDIS_HOST || 'localhost',
@@ -17,7 +25,7 @@ class CacheManager {
         db: process.env.REDIS_DB || 0,
         retry_strategy: (options) => {
           if (options.error && options.error.code === 'ECONNREFUSED') {
-            console.log('Redis server connection refused');
+            // Silently fall back to memory cache instead of showing error
             return new Error('Redis server connection refused');
           }
           if (options.total_retry_time > 1000 * 60 * 60) {
@@ -37,28 +45,40 @@ class CacheManager {
       });
 
       this.client.on('error', (err) => {
-        console.error('❌ Redis connection error:', err);
+        // Only log Redis errors if explicitly trying to use Redis
+        if (this.useRedis) {
+          console.warn('⚠️ Redis connection issue, falling back to memory cache');
+        }
         this.isConnected = false;
+        this.setupMemoryFallback();
       });
 
       this.client.on('end', () => {
-        console.log('Redis connection ended');
+        if (this.useRedis) {
+          console.log('Redis connection ended');
+        }
         this.isConnected = false;
       });
 
       await this.client.connect();
       
     } catch (error) {
-      console.error('Failed to connect to Redis:', error);
-      this.isConnected = false;
+      // Silent fallback - no error logging unless explicitly using Redis
+      if (this.useRedis) {
+        console.warn('⚠️ Could not connect to Redis, using memory cache');
+      } else {
+        console.log('📝 Using in-memory cache');
+      }
       
-      // Fallback to in-memory cache if Redis is not available
       this.setupMemoryFallback();
     }
   }
 
   setupMemoryFallback() {
-    console.log('⚠️  Using in-memory cache fallback');
+    if (!this.useRedis) {
+      // Don't show warning if we're intentionally not using Redis
+      console.log('💾 Memory cache initialized');
+    }
     this.memoryCache = new Map();
     this.isConnected = true; // Allow cache operations to proceed
   }

@@ -413,17 +413,17 @@ async function cleanup() {
 const PORT = process.env.PORT || 3000;
 
 initializeServices().then(() => {
-  server.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`
     🎉 Trendgeist Server Started!
     
-    🌐 Server: http://localhost:${PORT}
+    🌐 Server: http://0.0.0.0:${PORT}
     🔌 WebSocket: Available
     💾 Database: PostgreSQL
     🚀 Cache: ${cacheManager.client ? 'Redis' : 'Memory'}
     🤖 AI: ${model ? 'Gemini 1.5 Flash' : 'Disabled'}
     
-    📊 Health Check: http://localhost:${PORT}/health
+    📊 Health Check: http://0.0.0.0:${PORT}/health
     📈 API Docs: Available in README.md
     `);
   });
