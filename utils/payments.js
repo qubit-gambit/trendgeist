@@ -1,9 +1,22 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { v4: uuidv4 } = require('uuid');
 
+// Global payment manager for handling subscriptions and token purchases
 class GlobalPaymentManager {
     constructor() {
-        this.stripe = stripe;
+        // Initialize Stripe only if API key is available
+        if (process.env.STRIPE_SECRET_KEY) {
+            this.stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+            this.isEnabled = true;
+            console.log('✅ Stripe payments initialized');
+        } else {
+            this.stripe = null;
+            this.isEnabled = false;
+            console.warn('⚠️  STRIPE_SECRET_KEY not provided - payment features will be disabled');
+        }
+        
+        this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+        this.appUrl = process.env.APP_URL || 'https://qubit-gambit.github.io/trendgeist';
+        
         this.supportedCurrencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'SGD', 'AED'];
         this.defaultCurrency = 'USD'; // Settles to Pakistani bank in USD
     }
@@ -109,6 +122,11 @@ class GlobalPaymentManager {
 
     async createPaymentSession(paymentData) {
         try {
+            // Check if payments are enabled
+            if (!this.isEnabled) {
+                throw new Error('Payment processing is currently disabled. Please contact support.');
+            }
+
             const { type, plan_id, user_id, currency = 'USD', return_url } = paymentData;
 
             let sessionData = {
@@ -197,6 +215,12 @@ class GlobalPaymentManager {
 
     async handleWebhook(event) {
         try {
+            // Check if payments are enabled
+            if (!this.isEnabled) {
+                console.warn('Webhook received but payments are disabled');
+                return;
+            }
+
             switch (event.type) {
                 case 'checkout.session.completed':
                     await this.handleSuccessfulPayment(event.data.object);
