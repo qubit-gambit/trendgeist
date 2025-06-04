@@ -153,20 +153,20 @@ class GlobalPaymentManager {
             } else if (type === 'tokens') {
                 // Token purchase
                 const packages = this.getTokenPackages();
-                const package = packages[plan_id];
+                const tokenPackage = packages[plan_id];
                 
-                if (!package) {
+                if (!tokenPackage) {
                     throw new Error('Invalid token package');
                 }
 
-                const price = this.convertPrice(package.price_usd, currency);
+                const price = this.convertPrice(tokenPackage.price_usd, currency);
 
                 sessionData.line_items = [{
                     price_data: {
                         currency: currency.toLowerCase(),
                         product_data: {
-                            name: package.name,
-                            description: `${package.tokens + package.bonus} prediction tokens for Trendgeist`,
+                            name: tokenPackage.name,
+                            description: `${tokenPackage.tokens + tokenPackage.bonus} prediction tokens for Trendgeist`,
                             images: ['https://qubit-gambit.github.io/trendgeist/assets/tokens-icon.png']
                         },
                         unit_amount: Math.round(price * 100) // Stripe expects cents
