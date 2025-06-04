@@ -2,7 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const paymentManager = require('../utils/payments');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// Initialize Stripe conditionally
+let stripe = null;
+if (process.env.STRIPE_SECRET_KEY) {
+    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
+
+// Middleware to check if payments are enabled
+const requirePayments = (req, res, next) => {
+    if (!paymentManager.isEnabled || !stripe) {
+        return res.status(503).json({ 
+            error: 'Payment services are currently disabled. Please contact support.' 
+        });
+    }
+    next();
+};
 
 // =============================================================================
 // PRICING & PLANS
@@ -67,7 +82,7 @@ router.get('/tokens', (req, res) => {
 // =============================================================================
 
 // Create payment session for subscription
-router.post('/create-subscription', authenticateToken, async (req, res) => {
+router.post('/create-subscription', authenticateToken, requirePayments, async (req, res) => {
     try {
         const { plan_id, currency = 'USD' } = req.body;
         const user = req.user;
@@ -89,7 +104,7 @@ router.post('/create-subscription', authenticateToken, async (req, res) => {
 });
 
 // Create payment session for tokens
-router.post('/create-token-purchase', authenticateToken, async (req, res) => {
+router.post('/create-token-purchase', authenticateToken, requirePayments, async (req, res) => {
     try {
         const { package_id, currency = 'USD' } = req.body;
         const user = req.user;
@@ -115,7 +130,7 @@ router.post('/create-token-purchase', authenticateToken, async (req, res) => {
 // =============================================================================
 
 // Get payment session status
-router.get('/session/:session_id', authenticateToken, async (req, res) => {
+router.get('/session/:session_id', authenticateToken, requirePayments, async (req, res) => {
     try {
         const { session_id } = req.params;
         const session = await stripe.checkout.sessions.retrieve(session_id);
@@ -180,7 +195,7 @@ router.get('/subscription', authenticateToken, async (req, res) => {
 // =============================================================================
 
 // Cancel subscription
-router.post('/cancel-subscription', authenticateToken, async (req, res) => {
+router.post('/cancel-subscription', authenticateToken, requirePayments, async (req, res) => {
     try {
         const pool = require('../database/config');
         const result = await pool.query(
@@ -220,7 +235,7 @@ router.post('/cancel-subscription', authenticateToken, async (req, res) => {
 // =============================================================================
 
 // Stripe webhook endpoint
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhook', requirePayments, express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
